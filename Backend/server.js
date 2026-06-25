@@ -15,8 +15,13 @@ import clientReviewRouter from './routes/client/review-routes.js'
 import clientSearchRouter from './routes/client/search-routes.js'
 import clientTourPackageRouter from './routes/client/tourPackage-routes.js'
 import { seedAdminUser } from "./helpers/seedAdmin.js"
+import path from "path"
+import { fileURLToPath } from "url"
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 mongoose
   .connect(process.env.MONGODB_URI)
@@ -27,7 +32,7 @@ mongoose
   .catch((error) => console.log(error));
 
 const app = express();
-const PORT = process.env.PORT || 'https://traveling-wgts.onrender.com';
+const PORT = process.env.PORT || 5000;
 const allowedOrigins = [
   process.env.CLIENT_BASE_URL,
   "http://localhost:5173",
@@ -76,6 +81,17 @@ app.use("/api/client/orders",clientOrderRouter);
 app.use("/api/client/review",clientReviewRouter);
 app.use("/api/client/search",clientSearchRouter);
 app.use("/api/client/package",clientTourPackageRouter);
+
+// Serve frontend static files
+const frontendPath = path.join(__dirname, "../my-frontend/dist");
+app.use(express.static(frontendPath));
+
+// SPA fallback - serve index.html for all non-API routes
+app.use((req, res, next) => {
+  res.sendFile(path.join(frontendPath, "index.html"), (err) => {
+    if (err) next(err);
+  });
+});
 
 app.listen(PORT, () => console.log(`Server is now running on port : ${PORT}`));
 

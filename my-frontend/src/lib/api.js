@@ -1,2 +1,2 @@
 export const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "https://traveling-wgts.onrender.com";
+  import.meta.env.VITE_API_URL || "https://traveling-2-o2qu.onrender.com";
